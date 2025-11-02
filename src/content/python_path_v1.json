@@ -1,0 +1,327 @@
+{
+  "id": "python_path_v1",
+  "title": "Python Starter Path",
+  "description": "Master Python fundamentals through bite-sized lessons",
+  "lessons": [
+    {
+      "id": "A1_ftg_var_name",
+      "type": "ftg",
+      "title": "Pick the valid variable name",
+      "instructions": [
+        "To create a variable, we start by typing its name.",
+        "Variable names need to be single words and have no spaces.",
+        "Tap on the word city to start creating the variable."
+      ],
+      "choices": ["home city", "city"],
+      "correctIndex": 1,
+      "xp": 10,
+      "tags": ["variables", "naming"]
+    },
+    {
+      "id": "A2_ftg_data_types",
+      "type": "ftg",
+      "title": "Identify the data type",
+      "instructions": [
+        "Python has different types of data.",
+        "Numbers like 42 are integers (int).",
+        "Tap int to identify the type of 42."
+      ],
+      "choices": ["str", "int", "float", "bool"],
+      "correctIndex": 1,
+      "xp": 10,
+      "tags": ["data-types"]
+    },
+    {
+      "id": "A3_code_print_greeting",
+      "type": "code",
+      "title": "Your first print",
+      "instructions": [
+        "Print the greeting exactly as shown.",
+        "Use double quotes around the text."
+      ],
+      "starter": "# Write your code below\n",
+      "checks": [
+        {
+          "kind": "regex",
+          "pattern": "print\\(\\\"Hello, VibeCoding!\\\"\\)",
+          "message": "Use print(\"Hello, VibeCoding!\")."
+        }
+      ],
+      "xp": 15,
+      "tags": ["io", "print"]
+    },
+    {
+      "id": "A4_code_fstring",
+      "type": "code",
+      "title": "Format with f-strings",
+      "instructions": [
+        "Create a variable name with your name.",
+        "Print a greeting using an f-string: f\"Hello, {name}!\""
+      ],
+      "starter": "name = \"Alex\"\n# Print greeting with f-string\n",
+      "checks": [
+        {
+          "kind": "regex",
+          "pattern": "f\".*\\{name\\}",
+          "message": "Use an f-string with {name} inside."
+        },
+        {
+          "kind": "regex",
+          "pattern": "print\\(",
+          "message": "Don't forget to print the result."
+        }
+      ],
+      "xp": 20,
+      "tags": ["strings", "f-strings"]
+    },
+    {
+      "id": "A5_ftg_operators",
+      "type": "ftg",
+      "title": "Division operators",
+      "instructions": [
+        "Python has two division operators.",
+        "/ gives a float result, // gives an integer.",
+        "Tap float as the result type of 3 / 2."
+      ],
+      "choices": ["int", "float", "str"],
+      "correctIndex": 1,
+      "xp": 10,
+      "tags": ["operators"]
+    },
+    {
+      "id": "A6_code_input_calc",
+      "type": "code",
+      "title": "Input and calculation",
+      "instructions": [
+        "Get input with input() and convert to int.",
+        "Add 5 to the number and print the result."
+      ],
+      "starter": "# Get a number from input\n# Convert to int, add 5, and print\n",
+      "checks": [
+        {
+          "kind": "regex",
+          "pattern": "int\\(input\\(",
+          "message": "Use int(input()) to get a number."
+        },
+        {
+          "kind": "regex",
+          "pattern": "\\+\\s*5",
+          "message": "Add 5 to the number."
+        },
+        {
+          "kind": "regex",
+          "pattern": "print\\(",
+          "message": "Print the result."
+        }
+      ],
+      "xp": 20,
+      "tags": ["input", "casting"]
+    },
+    {
+      "id": "B1_ftg_boolean_logic",
+      "type": "ftg",
+      "title": "Boolean logic",
+      "instructions": [
+        "True and False are boolean values.",
+        "True and True results in True.",
+        "Tap True for the result."
+      ],
+      "choices": ["True", "False"],
+      "correctIndex": 0,
+      "xp": 10,
+      "tags": ["boolean"]
+    },
+    {
+      "id": "B2_code_grades",
+      "type": "code",
+      "title": "Grade classifier",
+      "instructions": [
+        "Read the score variable (0–100).",
+        "Print A for 90+, B for 80–89, C for 70–79, else F."
+      ],
+      "starter": "score = 86\n# TODO: print grade letter\n",
+      "checks": [
+        {
+          "kind": "regex",
+          "pattern": "if\\s+score\\s*>=\\s*90",
+          "message": "Check if score >= 90 for grade A."
+        },
+        {
+          "kind": "regex",
+          "pattern": "elif",
+          "message": "Use elif for other grade bands."
+        },
+        {
+          "kind": "regex",
+          "pattern": "print\\([\\\"'][ABCF][\\\"']\\)",
+          "message": "Print a single letter grade."
+        }
+      ],
+      "xp": 25,
+      "tags": ["control-flow", "if-elif-else"]
+    },
+    {
+      "id": "B3_code_for_loop",
+      "type": "code",
+      "title": "Sum numbers with a loop",
+      "instructions": [
+        "Use a for loop to iterate over the numbers list.",
+        "Add each number to a total and print the total."
+      ],
+      "starter": "numbers = [1, 2, 3, 4, 5]\ntotal = 0\n# Loop and sum\n",
+      "checks": [
+        {
+          "kind": "regex",
+          "pattern": "for\\s+\\w+\\s+in\\s+numbers",
+          "message": "Use: for num in numbers"
+        },
+        {
+          "kind": "regex",
+          "pattern": "total\\s*\\+=",
+          "message": "Add to total with +=."
+        },
+        {
+          "kind": "regex",
+          "pattern": "print\\(total\\)",
+          "message": "Print the total."
+        }
+      ],
+      "xp": 20,
+      "tags": ["loops", "for"]
+    },
+    {
+      "id": "B4_ftg_range",
+      "type": "ftg",
+      "title": "Understanding range",
+      "instructions": [
+        "range(start, stop, step) generates numbers.",
+        "range(0, 10, 2) generates: 0, 2, 4, 6, 8.",
+        "Tap the correct sequence."
+      ],
+      "choices": ["0, 2, 4, 6, 8", "0, 2, 4, 6, 8, 10", "2, 4, 6, 8, 10"],
+      "correctIndex": 0,
+      "xp": 10,
+      "tags": ["range", "loops"]
+    },
+    {
+      "id": "B5_code_while_loop",
+      "type": "code",
+      "title": "While loop with break",
+      "instructions": [
+        "Use a while True loop.",
+        "Break when the user types 'quit'."
+      ],
+      "starter": "# while loop that breaks on 'quit'\n",
+      "checks": [
+        {
+          "kind": "regex",
+          "pattern": "while\\s+True",
+          "message": "Use while True for an infinite loop."
+        },
+        {
+          "kind": "regex",
+          "pattern": "break",
+          "message": "Use break to exit the loop."
+        },
+        {
+          "kind": "regex",
+          "pattern": "if.*==\\s*['\"]quit['\"]",
+          "message": "Check if input equals 'quit'."
+        }
+      ],
+      "xp": 25,
+      "tags": ["loops", "while", "break"]
+    },
+    {
+      "id": "B6_code_list_comprehension",
+      "type": "code",
+      "title": "List comprehension",
+      "instructions": [
+        "Create squares of numbers 0-4 using list comprehension.",
+        "Format: [x**2 for x in range(5)]"
+      ],
+      "starter": "# Create list of squares\nsquares = \n",
+      "checks": [
+        {
+          "kind": "regex",
+          "pattern": "\\[.*\\*\\*2.*for.*in.*range\\(5\\)\\]",
+          "message": "Use [x**2 for x in range(5)]."
+        }
+      ],
+      "xp": 25,
+      "tags": ["lists", "comprehension"]
+    },
+    {
+      "id": "C1_ftg_list_tuple",
+      "type": "ftg",
+      "title": "Lists vs Tuples",
+      "instructions": [
+        "Lists use square brackets [] and are mutable.",
+        "Tuples use parentheses () and are immutable.",
+        "Tap mutable for lists."
+      ],
+      "choices": ["mutable", "immutable"],
+      "correctIndex": 0,
+      "xp": 10,
+      "tags": ["collections", "lists", "tuples"]
+    },
+    {
+      "id": "C2_code_dict_freq",
+      "type": "code",
+      "title": "Word frequency counter",
+      "instructions": [
+        "Create a dictionary to count word occurrences.",
+        "Loop through words and update counts."
+      ],
+      "starter": "words = ['apple', 'banana', 'apple', 'cherry', 'banana', 'apple']\nfreq = {}\n# Count frequencies\n",
+      "checks": [
+        {
+          "kind": "regex",
+          "pattern": "for\\s+\\w+\\s+in\\s+words",
+          "message": "Loop through words."
+        },
+        {
+          "kind": "regex",
+          "pattern": "freq\\[",
+          "message": "Use dictionary access freq[word]."
+        },
+        {
+          "kind": "regex",
+          "pattern": "print\\(freq\\)",
+          "message": "Print the frequency dictionary."
+        }
+      ],
+      "xp": 30,
+      "tags": ["dictionaries", "loops"]
+    },
+    {
+      "id": "C3_code_is_even",
+      "type": "code",
+      "title": "is_even function",
+      "instructions": [
+        "Define is_even(n) that returns True if n is even, else False.",
+        "Call it with 4 and print the result."
+      ],
+      "starter": "# define is_even here\n",
+      "checks": [
+        {
+          "kind": "regex",
+          "pattern": "def\\s+is_even\\(n\\)\\s*:",
+          "message": "Define is_even(n)."
+        },
+        {
+          "kind": "regex",
+          "pattern": "return\\s+n\\s*%\\s*2\\s*==\\s*0",
+          "message": "Use modulo check: n % 2 == 0."
+        },
+        {
+          "kind": "regex",
+          "pattern": "print\\(\\s*is_even\\(\\s*4\\s*\\)\\s*\\)",
+          "message": "Print is_even(4)."
+        }
+      ],
+      "xp": 25,
+      "tags": ["functions"]
+    }
+  ]
+}
