@@ -12,8 +12,6 @@ const MODULES = [
   { id: 'A', name: 'Foundations', range: [0, 5] },
   { id: 'B', name: 'Control Flow', range: [6, 11] },
   { id: 'C', name: 'Collections & Functions', range: [12, 17] },
-  { id: 'D', name: 'Files, Errors, Modules', range: [18, 23] },
-  { id: 'E', name: 'Applied Mini-Projects', range: [24, 29] },
 ];
 
 export default function Dashboard() {
