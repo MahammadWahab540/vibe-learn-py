@@ -29,15 +29,15 @@ export default function Index() {
             </p>
             <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
               <Button
-                onClick={() => navigate('/learn')}
+                onClick={() => navigate('/dashboard')}
                 size="lg"
                 className="h-14 bg-gradient-primary px-8 text-lg font-semibold shadow-glow hover:opacity-90"
               >
-                Start Learning
+                {user.xp > 0 ? 'Continue Learning' : 'Start Learning'}
               </Button>
               {user.xp > 0 && (
                 <div className="text-sm text-muted-foreground">
-                  Continue your journey • {user.xp} XP
+                  {user.xp} XP • {user.streak} day streak
                 </div>
               )}
             </div>
