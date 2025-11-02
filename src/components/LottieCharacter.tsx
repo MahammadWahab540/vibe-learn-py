@@ -15,16 +15,8 @@ declare global {
 }
 
 export const LottieCharacter = ({ state, onAnimationComplete }: LottieCharacterProps) => {
-  const lottieRef = useRef<any>(null);
-
   useEffect(() => {
-    const element = lottieRef.current;
-    if (!element) return;
-
-    // Trigger animation based on state
     if (state === 'correct' || state === 'wrong') {
-      element.play();
-      
       // Reset to idle after animation
       const timer = setTimeout(() => {
         onAnimationComplete?.();
@@ -42,11 +34,10 @@ export const LottieCharacter = ({ state, onAnimationComplete }: LottieCharacterP
         'opacity-80'
       }`}>
         <dotlottie-wc
-          ref={lottieRef}
           src="https://lottie.host/a855b7f0-1952-4745-a513-869ffc2e1cd3/4werlp5GkM.lottie"
           style={{ width: '200px', height: '200px' }}
-          loop={state === 'idle'}
-          autoplay={state === 'idle'}
+          autoplay
+          loop
         />
       </div>
     </div>
