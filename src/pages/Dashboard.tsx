@@ -20,6 +20,10 @@ export default function Dashboard() {
   const { user, progress, initializeFromStorage } = useProgress();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  useEffect(() => {
+    initializeFromStorage();
+  }, [initializeFromStorage]);
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -27,10 +31,6 @@ export default function Dashboard() {
       </div>
     );
   }
-
-  useEffect(() => {
-    initializeFromStorage();
-  }, [initializeFromStorage]);
 
   const lessons = pathData.lessons;
   const totalLessons = lessons.length;
