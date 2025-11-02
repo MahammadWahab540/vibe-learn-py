@@ -1,8 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import { useProgress } from '@/store/useProgress';
 import { useEffect, useState } from 'react';
+import { useAuth } from '@/hooks/useAuth';
 import pathData from '@/content/python_path_v1.json';
-import { Lock, CheckCircle2, Menu, X } from 'lucide-react';
+import { Lock, CheckCircle2, Menu, X, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { GamificationChips } from '@/components/GamificationChips';
@@ -17,8 +18,17 @@ const MODULES = [
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const { loading, signOut } = useAuth(true);
   const { user, progress, initializeFromStorage } = useProgress();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-lg">Loading...</div>
+      </div>
+    );
+  }
 
   useEffect(() => {
     initializeFromStorage();
@@ -61,7 +71,18 @@ export default function Dashboard() {
             </button>
             <h1 className="text-lg font-semibold">Python Starter Path</h1>
           </div>
-          <GamificationChips streak={user.streak} hearts={user.hearts} xp={user.xp} />
+          <div className="flex items-center gap-2">
+            <GamificationChips streak={user.streak} hearts={user.hearts} xp={user.xp} />
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={signOut}
+              className="h-9 w-9"
+              title="Sign out"
+            >
+              <LogOut className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </header>
 

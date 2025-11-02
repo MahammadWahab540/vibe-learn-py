@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 import { TopBar } from '@/components/TopBar';
 import { Instruction } from '@/components/Instruction';
 import { FtgChoices } from '@/components/FtgChoices';
@@ -25,6 +26,7 @@ type Lesson = {
 
 export default function Learn() {
   const navigate = useNavigate();
+  const { loading } = useAuth(true);
   const { user, progress, currentLessonIndex, initializeFromStorage, setCurrentLesson, markLessonPassed, incrementAttempts, decrementHeart, saveCode } = useProgress();
   
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -34,6 +36,14 @@ export default function Learn() {
   
   const lessons = pathData.lessons as Lesson[];
   const currentLesson = lessons[currentLessonIndex];
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-lg">Loading...</div>
+      </div>
+    );
+  }
 
   useEffect(() => {
     initializeFromStorage();

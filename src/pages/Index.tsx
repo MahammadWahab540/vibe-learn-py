@@ -35,6 +35,14 @@ export default function Index() {
               >
                 {user.xp > 0 ? 'Continue Learning' : 'Start Learning'}
               </Button>
+              <Button
+                onClick={() => navigate('/auth')}
+                size="lg"
+                variant="outline"
+                className="h-14 px-8 text-lg font-semibold"
+              >
+                Sign In
+              </Button>
               {user.xp > 0 && (
                 <div className="text-sm text-muted-foreground">
                   {user.xp} XP • {user.streak} day streak
