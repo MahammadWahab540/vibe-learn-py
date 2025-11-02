@@ -7,6 +7,7 @@ import { FtgChoices } from '@/components/FtgChoices';
 import { CodeEditor } from '@/components/CodeEditor';
 import { BottomCheckBar } from '@/components/BottomCheckBar';
 import { PathDrawer } from '@/components/PathDrawer';
+import { LottieCharacter } from '@/components/LottieCharacter';
 import { useProgress } from '@/store/useProgress';
 import { runChecks } from '@/lib/checks';
 import { toast } from 'sonner';
@@ -33,6 +34,7 @@ export default function Learn() {
   const [checking, setChecking] = useState(false);
   const [selectedChoice, setSelectedChoice] = useState<number | null>(null);
   const [userCode, setUserCode] = useState('');
+  const [lottieState, setLottieState] = useState<'idle' | 'correct' | 'wrong'>('idle');
   
   const lessons = pathData.lessons as Lesson[];
   const currentLesson = lessons[currentLessonIndex];
@@ -69,6 +71,7 @@ export default function Learn() {
     if (currentLesson.type === 'ftg') {
       const correct = selectedChoice === currentLesson.correctIndex;
       if (correct) {
+        setLottieState('correct');
         markLessonPassed(currentLesson.id, currentLesson.xp);
         toast.success(`+${currentLesson.xp} XP! Great job!`, {
           duration: 2000,
@@ -81,12 +84,14 @@ export default function Learn() {
           }
         }, 1500);
       } else {
+        setLottieState('wrong');
         decrementHeart();
         toast.error('Not quite right. Try again!');
       }
     } else if (currentLesson.type === 'code') {
       const result = runChecks(userCode, currentLesson.checks || []);
       if (result.passed) {
+        setLottieState('correct');
         markLessonPassed(currentLesson.id, currentLesson.xp);
         saveCode(currentLesson.id, userCode);
         toast.success(`+${currentLesson.xp} XP! Perfect code!`, {
@@ -100,6 +105,7 @@ export default function Learn() {
           }
         }, 1500);
       } else {
+        setLottieState('wrong');
         decrementHeart();
         toast.error(
           <div className="space-y-1">
@@ -173,6 +179,11 @@ export default function Learn() {
         currentIndex={currentLessonIndex}
         progress={progress}
         onSelectLesson={setCurrentLesson}
+      />
+
+      <LottieCharacter 
+        state={lottieState} 
+        onAnimationComplete={() => setLottieState('idle')}
       />
     </div>
   );
