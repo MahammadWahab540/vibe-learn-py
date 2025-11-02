@@ -39,14 +39,6 @@ export default function Learn() {
   const lessons = pathData.lessons as Lesson[];
   const currentLesson = lessons[currentLessonIndex];
 
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-lg">Loading...</div>
-      </div>
-    );
-  }
-
   useEffect(() => {
     initializeFromStorage();
   }, [initializeFromStorage]);
@@ -58,6 +50,14 @@ export default function Learn() {
     }
     setSelectedChoice(null);
   }, [currentLessonIndex, currentLesson, progress]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-lg">Loading...</div>
+      </div>
+    );
+  }
 
   const handleCheck = async () => {
     if (!currentLesson) return;
