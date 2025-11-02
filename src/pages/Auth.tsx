@@ -4,9 +4,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Code2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { z } from 'zod';
+import logo from '@/assets/logo.png';
 
 const authSchema = z.object({
   email: z.string().trim().email({ message: "Invalid email address" }).max(255),
@@ -96,8 +96,8 @@ export default function Auth() {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center rounded-full bg-primary/10 p-4 mb-4">
-            <Code2 className="h-12 w-12 text-primary" />
+          <div className="inline-flex items-center justify-center rounded-2xl bg-primary/10 p-4 mb-4">
+            <img src={logo} alt="VibeCoding Logo" className="h-16 w-16 object-contain" />
           </div>
           <h1 className="text-3xl font-bold">VibeCoding</h1>
           <p className="text-muted-foreground">
