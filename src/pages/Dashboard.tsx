@@ -1,30 +1,47 @@
 import { useNavigate } from 'react-router-dom';
 import { useProgress } from '@/store/useProgress';
 import { useEffect, useState } from 'react';
-import { useAuth } from '@/hooks/useAuth';
+import { useUser, UserButton } from '@clerk/clerk-react';
 import pathData from '@/content/python_path_v1.json';
-import { Lock, CheckCircle2, Menu, X, LogOut } from 'lucide-react';
+import { Lock, CheckCircle2, Menu, X, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { GamificationChips } from '@/components/GamificationChips';
+import logo from '@/assets/logo.png';
 
 const MODULES = [
-  { id: 'A', name: 'Foundations', range: [0, 5] },
-  { id: 'B', name: 'Control Flow', range: [6, 11] },
-  { id: 'C', name: 'Collections & Functions', range: [12, 17] },
+  { id: '1', name: 'Introduction to Programming & Python', lessonCount: 4, range: [0, 3] },
+  { id: '2', name: 'Python Fundamentals', lessonCount: 6, range: [4, 9] },
+  { id: '3', name: 'Control Flow and Loops', lessonCount: 6, range: [10, 15] },
+  { id: '4', name: 'Strings', lessonCount: 5, range: [16, 17] },
+  { id: '5', name: 'Functions and Modules', lessonCount: 7, range: null },
+  { id: '6', name: 'Data Structures in Python', lessonCount: 6, range: null },
+  { id: '7', name: 'Object-Oriented Programming (OOP) in Python', lessonCount: 7, range: null },
+  { id: '8', name: 'Advanced Python Concepts', lessonCount: 9, range: null },
+  { id: '9', name: 'File IO – Working with Files & Related Modules', lessonCount: 5, range: null },
+  { id: '10', name: 'Working with External Libraries', lessonCount: 4, range: null },
+  { id: '11', name: 'Using AI as a Developer', lessonCount: 4, range: null },
+  { id: '12', name: 'Hands-On Python Projects', lessonCount: 6, range: null },
+  { id: '13', name: 'Building Web Applications using Flask', lessonCount: 12, range: null },
+  { id: '14', name: 'Project VidSnapAI – An AI Powered TikTok/Reel Generator', lessonCount: 7, range: null },
+  { id: '15', name: 'Version Control: Git for Developers', lessonCount: 16, range: null },
+  { id: '16', name: 'Conclusion and Next Steps', lessonCount: 2, range: null },
+  { id: '17', name: '🎓 Certificate', lessonCount: 1, range: null, isCertificate: true },
 ];
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { loading, signOut } = useAuth(true);
+  const { isLoaded, user: clerkUser } = useUser();
   const { user, progress, initializeFromStorage } = useProgress();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
-    initializeFromStorage();
-  }, [initializeFromStorage]);
+    if (isLoaded && clerkUser?.id) {
+      initializeFromStorage(clerkUser.id);
+    }
+  }, [isLoaded, clerkUser?.id, initializeFromStorage]);
 
-  if (loading) {
+  if (!isLoaded) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-lg">Loading...</div>
@@ -42,6 +59,21 @@ export default function Dashboard() {
     const prevLesson = lessons[index - 1];
     return progress[prevLesson.id]?.passed || false;
   };
+
+  // Find the current active module based on progress
+  const getCurrentModule = () => {
+    // Find the first incomplete lesson
+    const firstIncompleteIndex = lessons.findIndex((l) => !progress[l.id]?.passed);
+    if (firstIncompleteIndex === -1) return MODULES.length - 1; // All complete
+    
+    // Find which module contains this lesson
+    return MODULES.findIndex((module) => {
+      if (!module.range) return false;
+      return firstIncompleteIndex >= module.range[0] && firstIncompleteIndex <= module.range[1];
+    });
+  };
+
+  const activeModuleIndex = getCurrentModule();
 
   const handleStartLesson = (index: number) => {
     if (canAccessLesson(index)) {
@@ -74,12 +106,13 @@ export default function Dashboard() {
             <Button
               variant="ghost"
               size="icon"
-              onClick={signOut}
+              onClick={() => navigate('/profile')}
               className="h-9 w-9"
-              title="Sign out"
+              title="Profile"
             >
-              <LogOut className="h-4 w-4" />
+              <User className="h-4 w-4" />
             </Button>
+            <UserButton afterSignOutUrl="/" />
           </div>
         </div>
       </header>
@@ -104,29 +137,66 @@ export default function Dashboard() {
 
             <div>
               <div className="mb-3 text-xs font-medium text-muted-foreground">SECTIONS</div>
-              <div className="space-y-2">
-                {MODULES.map((module) => {
-                  const [start, end] = module.range;
-                  const moduleCompleted = lessons
-                    .slice(start, end + 1)
-                    .every((l) => progress[l.id]?.passed);
+              <div className="space-y-2 max-h-[calc(100vh-16rem)] overflow-y-auto pr-2">
+                {MODULES.map((module, moduleIndex) => {
+                  const moduleCompleted = module.range
+                    ? lessons.slice(module.range[0], module.range[1] + 1).every((l) => progress[l.id]?.passed)
+                    : false;
+                  const isComingSoon = !module.range && !module.isCertificate;
+                  
+                  // Find first incomplete lesson in this module
+                  const firstIncompleteIndex = module.range 
+                    ? lessons.slice(module.range[0], module.range[1] + 1).findIndex((l) => !progress[l.id]?.passed)
+                    : -1;
+                  const targetLessonIndex = firstIncompleteIndex >= 0 
+                    ? module.range![0] + firstIncompleteIndex 
+                    : module.range?.[0];
+                  
+                  const handleModuleClick = () => {
+                    if (!isComingSoon && !module.isCertificate && targetLessonIndex !== undefined) {
+                      const lessonElement = document.getElementById(`lesson-${targetLessonIndex}`);
+                      if (lessonElement) {
+                        lessonElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                      }
+                    }
+                  };
+                  
+                  const isActive = moduleIndex === activeModuleIndex;
                   
                   return (
-                    <div
+                    <button
                       key={module.id}
-                      className={`rounded-lg border border-border p-3 transition-colors ${
-                        moduleCompleted ? 'bg-success/5' : 'bg-card'
+                      onClick={handleModuleClick}
+                      disabled={isComingSoon || module.isCertificate}
+                      className={`w-full rounded-lg border p-3 transition-colors text-left ${
+                        module.isCertificate 
+                          ? 'bg-primary/5 border-primary/20 cursor-default' 
+                          : isActive
+                          ? 'bg-primary/10 border-primary/50 hover:bg-primary/15'
+                          : moduleCompleted 
+                          ? 'bg-success/5 border-border hover:bg-success/10' 
+                          : isComingSoon 
+                          ? 'bg-muted/30 border-border cursor-not-allowed' 
+                          : 'bg-card border-border hover:bg-accent'
                       }`}
                     >
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">
-                          {module.id}. {module.name}
-                        </span>
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-medium truncate">
+                            {module.id}. {module.name}
+                          </div>
+                          <div className="text-xs text-muted-foreground mt-0.5">
+                            {module.lessonCount} {module.lessonCount === 1 ? 'lesson' : 'lessons'}
+                          </div>
+                        </div>
                         {moduleCompleted && (
-                          <CheckCircle2 className="h-4 w-4 text-success" />
+                          <CheckCircle2 className="h-4 w-4 text-success flex-shrink-0" />
+                        )}
+                        {isComingSoon && (
+                          <Lock className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                         )}
                       </div>
-                    </div>
+                    </button>
                   );
                 })}
               </div>
@@ -177,8 +247,33 @@ export default function Dashboard() {
 
             {/* Modules */}
             <div className="space-y-12">
-              {MODULES.map((module, moduleIndex) => {
-                const [start, end] = module.range;
+              {MODULES.filter(m => m.range !== null || m.isCertificate).map((module, moduleIndex) => {
+                if (module.isCertificate) {
+                  return (
+                    <section key={module.id}>
+                      <div className="mb-4">
+                        <div className="text-xs font-medium text-muted-foreground">
+                          ACHIEVEMENT
+                        </div>
+                        <h2 className="mt-2 text-2xl font-bold">
+                          {module.name}
+                        </h2>
+                      </div>
+                      <div className="rounded-xl border-2 border-primary/30 bg-primary/5 p-6 text-center">
+                        <div className="text-4xl mb-2">🎓</div>
+                        <div className="font-medium mb-1">Course Certificate</div>
+                        <div className="text-sm text-muted-foreground mb-4">
+                          Complete all sections to download your certificate
+                        </div>
+                        <Button disabled className="bg-gradient-primary">
+                          Download Certificate
+                        </Button>
+                      </div>
+                    </section>
+                  );
+                }
+
+                const [start, end] = module.range!;
                 const moduleLessons = lessons.slice(start, end + 1);
                 const moduleCompleted = moduleLessons.filter((l) => progress[l.id]?.passed).length;
 
@@ -206,6 +301,7 @@ export default function Dashboard() {
 
                         return (
                           <div
+                            id={`lesson-${globalIndex}`}
                             key={lesson.id}
                             className={`flex items-center justify-between rounded-xl border-2 p-4 transition-all ${
                               isPassed

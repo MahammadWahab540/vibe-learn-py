@@ -1,16 +1,27 @@
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '@clerk/clerk-react';
 import { Button } from '@/components/ui/button';
-import { Code2, Zap, Target, Trophy } from 'lucide-react';
+import { Zap, Target, Trophy } from 'lucide-react';
 import { useEffect } from 'react';
 import { useProgress } from '@/store/useProgress';
+import logo from '@/assets/logo.png';
 
 export default function Index() {
   const navigate = useNavigate();
+  const { user: clerkUser, isSignedIn, isLoaded } = useUser();
   const { user, initializeFromStorage } = useProgress();
 
   useEffect(() => {
-    initializeFromStorage();
-  }, [initializeFromStorage]);
+    if (isLoaded && clerkUser?.id) {
+      initializeFromStorage(clerkUser.id);
+    }
+  }, [isLoaded, clerkUser?.id, initializeFromStorage]);
+
+  useEffect(() => {
+    if (isSignedIn) {
+      navigate('/dashboard');
+    }
+  }, [isSignedIn, navigate]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -18,8 +29,8 @@ export default function Index() {
         <div className="mx-auto max-w-4xl space-y-12">
           {/* Hero Section */}
           <div className="space-y-6 text-center">
-            <div className="inline-flex items-center justify-center rounded-full bg-primary/10 p-4">
-              <Code2 className="h-12 w-12 text-primary" />
+            <div className="inline-flex items-center justify-center rounded-2xl bg-primary/10 p-4">
+              <img src={logo} alt="VibeCoding Logo" className="h-16 w-16 object-contain" />
             </div>
             <h1 className="text-5xl font-bold tracking-tight">
               VibeCoding
@@ -29,25 +40,20 @@ export default function Index() {
             </p>
             <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
               <Button
-                onClick={() => navigate('/dashboard')}
+                onClick={() => navigate('/sign-in')}
                 size="lg"
                 className="h-14 bg-gradient-primary px-8 text-lg font-semibold shadow-glow hover:opacity-90"
               >
-                {user.xp > 0 ? 'Continue Learning' : 'Start Learning'}
+                Get Started
               </Button>
               <Button
-                onClick={() => navigate('/auth')}
+                onClick={() => navigate('/sign-up')}
                 size="lg"
                 variant="outline"
                 className="h-14 px-8 text-lg font-semibold"
               >
-                Sign In
+                Sign Up
               </Button>
-              {user.xp > 0 && (
-                <div className="text-sm text-muted-foreground">
-                  {user.xp} XP • {user.streak} day streak
-                </div>
-              )}
             </div>
           </div>
 

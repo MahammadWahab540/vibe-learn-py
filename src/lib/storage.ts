@@ -16,15 +16,12 @@ export interface PathProgress {
   [lessonId: string]: LessonProgress;
 }
 
-const STORAGE_KEYS = {
-  USER: 'vc:user',
-  PROGRESS: 'vc:progress:python_basics_v1',
-  SETTINGS: 'vc:settings',
-} as const;
+const getUserKey = (userId: string) => `vc:user:${userId}`;
+const getProgressKey = (userId: string) => `vc:progress:${userId}:python_basics_v1`;
 
-export const getUser = (): User => {
+export const getUser = (userId: string): User => {
   try {
-    const stored = localStorage.getItem(STORAGE_KEYS.USER);
+    const stored = localStorage.getItem(getUserKey(userId));
     if (stored) return JSON.parse(stored);
   } catch (e) {
     console.error('Failed to read user from storage', e);
@@ -40,17 +37,17 @@ export const getUser = (): User => {
   };
 };
 
-export const saveUser = (user: User): void => {
+export const saveUser = (userId: string, user: User): void => {
   try {
-    localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
+    localStorage.setItem(getUserKey(userId), JSON.stringify(user));
   } catch (e) {
     console.error('Failed to save user', e);
   }
 };
 
-export const getProgress = (): PathProgress => {
+export const getProgress = (userId: string): PathProgress => {
   try {
-    const stored = localStorage.getItem(STORAGE_KEYS.PROGRESS);
+    const stored = localStorage.getItem(getProgressKey(userId));
     if (stored) return JSON.parse(stored);
   } catch (e) {
     console.error('Failed to read progress', e);
@@ -58,9 +55,9 @@ export const getProgress = (): PathProgress => {
   return {};
 };
 
-export const saveProgress = (progress: PathProgress): void => {
+export const saveProgress = (userId: string, progress: PathProgress): void => {
   try {
-    localStorage.setItem(STORAGE_KEYS.PROGRESS, JSON.stringify(progress));
+    localStorage.setItem(getProgressKey(userId), JSON.stringify(progress));
   } catch (e) {
     console.error('Failed to save progress', e);
   }
@@ -68,12 +65,29 @@ export const saveProgress = (progress: PathProgress): void => {
 
 export const updateStreak = (user: User): User => {
   const today = new Date().toISOString().split('T')[0];
-  if (user.lastActiveISO !== today) {
+  const lastActive = new Date(user.lastActiveISO);
+  const todayDate = new Date(today);
+  
+  // Calculate difference in days
+  const diffTime = todayDate.getTime() - lastActive.getTime();
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  
+  if (diffDays === 0) {
+    // Same day, no change
+    return user;
+  } else if (diffDays === 1) {
+    // Next day, increment streak
     return {
       ...user,
       streak: user.streak + 1,
       lastActiveISO: today,
     };
+  } else {
+    // Missed a day or more, reset streak to 1
+    return {
+      ...user,
+      streak: 1,
+      lastActiveISO: today,
+    };
   }
-  return user;
 };
