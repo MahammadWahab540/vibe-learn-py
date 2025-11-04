@@ -8,12 +8,14 @@ import logo from '@/assets/logo.png';
 
 export default function Index() {
   const navigate = useNavigate();
-  const { user: clerkUser, isSignedIn } = useUser();
+  const { user: clerkUser, isSignedIn, isLoaded } = useUser();
   const { user, initializeFromStorage } = useProgress();
 
   useEffect(() => {
-    initializeFromStorage();
-  }, [initializeFromStorage]);
+    if (isLoaded && clerkUser?.id) {
+      initializeFromStorage(clerkUser.id);
+    }
+  }, [isLoaded, clerkUser?.id, initializeFromStorage]);
 
   useEffect(() => {
     if (isSignedIn) {

@@ -27,7 +27,7 @@ type Lesson = {
 
 export default function Learn() {
   const navigate = useNavigate();
-  const { isLoaded } = useUser();
+  const { isLoaded, user: clerkUser } = useUser();
   const { user, progress, currentLessonIndex, initializeFromStorage, setCurrentLesson, markLessonPassed, incrementAttempts, decrementHeart, saveCode } = useProgress();
   
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -40,8 +40,10 @@ export default function Learn() {
   const currentLesson = lessons[currentLessonIndex];
 
   useEffect(() => {
-    initializeFromStorage();
-  }, [initializeFromStorage]);
+    if (isLoaded && clerkUser?.id) {
+      initializeFromStorage(clerkUser.id);
+    }
+  }, [isLoaded, clerkUser?.id, initializeFromStorage]);
 
   useEffect(() => {
     if (currentLesson?.type === 'code' && currentLesson.starter) {

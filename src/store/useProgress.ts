@@ -5,9 +5,10 @@ interface ProgressState {
   user: User;
   progress: PathProgress;
   currentLessonIndex: number;
+  userId: string | null;
   
   // Actions
-  initializeFromStorage: () => void;
+  initializeFromStorage: (userId: string) => void;
   setCurrentLesson: (index: number) => void;
   markLessonPassed: (lessonId: string, xpGained: number) => void;
   incrementAttempts: (lessonId: string) => void;
@@ -25,17 +26,18 @@ export const useProgress = create<ProgressState>((set, get) => ({
   },
   progress: {},
   currentLessonIndex: 0,
+  userId: null,
 
-  initializeFromStorage: () => {
-    const user = getUser();
-    const progress = getProgress();
+  initializeFromStorage: (userId: string) => {
+    const user = getUser(userId);
+    const progress = getProgress(userId);
     const updatedUser = updateStreak(user);
     
-    if (updatedUser.lastActiveISO !== user.lastActiveISO) {
-      saveUser(updatedUser);
+    if (updatedUser.lastActiveISO !== user.lastActiveISO || updatedUser.streak !== user.streak) {
+      saveUser(userId, updatedUser);
     }
     
-    set({ user: updatedUser, progress });
+    set({ user: updatedUser, progress, userId });
   },
 
   setCurrentLesson: (index: number) => {
@@ -43,7 +45,8 @@ export const useProgress = create<ProgressState>((set, get) => ({
   },
 
   markLessonPassed: (lessonId: string, xpGained: number) => {
-    const { user, progress } = get();
+    const { user, progress, userId } = get();
+    if (!userId) return;
     
     const updatedUser = {
       ...user,
@@ -58,13 +61,14 @@ export const useProgress = create<ProgressState>((set, get) => ({
       },
     };
     
-    saveUser(updatedUser);
-    saveProgress(updatedProgress);
+    saveUser(userId, updatedUser);
+    saveProgress(userId, updatedProgress);
     set({ user: updatedUser, progress: updatedProgress });
   },
 
   incrementAttempts: (lessonId: string) => {
-    const { progress } = get();
+    const { progress, userId } = get();
+    if (!userId) return;
     
     const updatedProgress = {
       ...progress,
@@ -74,22 +78,25 @@ export const useProgress = create<ProgressState>((set, get) => ({
       },
     };
     
-    saveProgress(updatedProgress);
+    saveProgress(userId, updatedProgress);
     set({ progress: updatedProgress });
   },
 
   decrementHeart: () => {
-    const { user } = get();
+    const { user, userId } = get();
+    if (!userId) return;
+    
     const updatedUser = {
       ...user,
       hearts: Math.max(0, user.hearts - 1),
     };
-    saveUser(updatedUser);
+    saveUser(userId, updatedUser);
     set({ user: updatedUser });
   },
 
   saveCode: (lessonId: string, code: string) => {
-    const { progress } = get();
+    const { progress, userId } = get();
+    if (!userId) return;
     
     const updatedProgress = {
       ...progress,
@@ -101,7 +108,7 @@ export const useProgress = create<ProgressState>((set, get) => ({
       },
     };
     
-    saveProgress(updatedProgress);
+    saveProgress(userId, updatedProgress);
     set({ progress: updatedProgress });
   },
 }));

@@ -31,13 +31,15 @@ const MODULES = [
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { isLoaded } = useUser();
+  const { isLoaded, user: clerkUser } = useUser();
   const { user, progress, initializeFromStorage } = useProgress();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
-    initializeFromStorage();
-  }, [initializeFromStorage]);
+    if (isLoaded && clerkUser?.id) {
+      initializeFromStorage(clerkUser.id);
+    }
+  }, [isLoaded, clerkUser?.id, initializeFromStorage]);
 
   if (!isLoaded) {
     return (
@@ -127,17 +129,36 @@ export default function Dashboard() {
                     : false;
                   const isComingSoon = !module.range && !module.isCertificate;
                   
+                  // Find first incomplete lesson in this module
+                  const firstIncompleteIndex = module.range 
+                    ? lessons.slice(module.range[0], module.range[1] + 1).findIndex((l) => !progress[l.id]?.passed)
+                    : -1;
+                  const targetLessonIndex = firstIncompleteIndex >= 0 
+                    ? module.range![0] + firstIncompleteIndex 
+                    : module.range?.[0];
+                  
+                  const handleModuleClick = () => {
+                    if (!isComingSoon && !module.isCertificate && targetLessonIndex !== undefined) {
+                      const lessonElement = document.getElementById(`lesson-${targetLessonIndex}`);
+                      if (lessonElement) {
+                        lessonElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                      }
+                    }
+                  };
+                  
                   return (
-                    <div
+                    <button
                       key={module.id}
-                      className={`rounded-lg border border-border p-3 transition-colors ${
+                      onClick={handleModuleClick}
+                      disabled={isComingSoon || module.isCertificate}
+                      className={`w-full rounded-lg border border-border p-3 transition-colors text-left ${
                         module.isCertificate 
-                          ? 'bg-primary/5 border-primary/20' 
+                          ? 'bg-primary/5 border-primary/20 cursor-default' 
                           : moduleCompleted 
-                          ? 'bg-success/5' 
+                          ? 'bg-success/5 hover:bg-success/10' 
                           : isComingSoon 
-                          ? 'bg-muted/30' 
-                          : 'bg-card'
+                          ? 'bg-muted/30 cursor-not-allowed' 
+                          : 'bg-card hover:bg-accent'
                       }`}
                     >
                       <div className="flex items-center justify-between gap-2">
@@ -156,7 +177,7 @@ export default function Dashboard() {
                           <Lock className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                         )}
                       </div>
-                    </div>
+                    </button>
                   );
                 })}
               </div>
@@ -261,6 +282,7 @@ export default function Dashboard() {
 
                         return (
                           <div
+                            id={`lesson-${globalIndex}`}
                             key={lesson.id}
                             className={`flex items-center justify-between rounded-xl border-2 p-4 transition-all ${
                               isPassed
