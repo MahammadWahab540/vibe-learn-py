@@ -60,6 +60,21 @@ export default function Dashboard() {
     return progress[prevLesson.id]?.passed || false;
   };
 
+  // Find the current active module based on progress
+  const getCurrentModule = () => {
+    // Find the first incomplete lesson
+    const firstIncompleteIndex = lessons.findIndex((l) => !progress[l.id]?.passed);
+    if (firstIncompleteIndex === -1) return MODULES.length - 1; // All complete
+    
+    // Find which module contains this lesson
+    return MODULES.findIndex((module) => {
+      if (!module.range) return false;
+      return firstIncompleteIndex >= module.range[0] && firstIncompleteIndex <= module.range[1];
+    });
+  };
+
+  const activeModuleIndex = getCurrentModule();
+
   const handleStartLesson = (index: number) => {
     if (canAccessLesson(index)) {
       navigate(`/learn?lesson=${index}`);
@@ -123,8 +138,8 @@ export default function Dashboard() {
             <div>
               <div className="mb-3 text-xs font-medium text-muted-foreground">SECTIONS</div>
               <div className="space-y-2 max-h-[calc(100vh-16rem)] overflow-y-auto pr-2">
-                {MODULES.map((module) => {
-                  const moduleCompleted = module.range 
+                {MODULES.map((module, moduleIndex) => {
+                  const moduleCompleted = module.range
                     ? lessons.slice(module.range[0], module.range[1] + 1).every((l) => progress[l.id]?.passed)
                     : false;
                   const isComingSoon = !module.range && !module.isCertificate;
@@ -146,19 +161,23 @@ export default function Dashboard() {
                     }
                   };
                   
+                  const isActive = moduleIndex === activeModuleIndex;
+                  
                   return (
                     <button
                       key={module.id}
                       onClick={handleModuleClick}
                       disabled={isComingSoon || module.isCertificate}
-                      className={`w-full rounded-lg border border-border p-3 transition-colors text-left ${
+                      className={`w-full rounded-lg border p-3 transition-colors text-left ${
                         module.isCertificate 
                           ? 'bg-primary/5 border-primary/20 cursor-default' 
+                          : isActive
+                          ? 'bg-primary/10 border-primary/50 hover:bg-primary/15'
                           : moduleCompleted 
-                          ? 'bg-success/5 hover:bg-success/10' 
+                          ? 'bg-success/5 border-border hover:bg-success/10' 
                           : isComingSoon 
-                          ? 'bg-muted/30 cursor-not-allowed' 
-                          : 'bg-card hover:bg-accent'
+                          ? 'bg-muted/30 border-border cursor-not-allowed' 
+                          : 'bg-card border-border hover:bg-accent'
                       }`}
                     >
                       <div className="flex items-center justify-between gap-2">
