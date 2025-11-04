@@ -1,12 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 import { useProgress } from '@/store/useProgress';
 import { useEffect, useState } from 'react';
-import { useAuth } from '@/hooks/useAuth';
+import { useUser, UserButton } from '@clerk/clerk-react';
 import pathData from '@/content/python_path_v1.json';
-import { Lock, CheckCircle2, Menu, X, LogOut } from 'lucide-react';
+import { Lock, CheckCircle2, Menu, X, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { GamificationChips } from '@/components/GamificationChips';
+import logo from '@/assets/logo.png';
 
 const MODULES = [
   { id: 'A', name: 'Foundations', range: [0, 5] },
@@ -16,7 +17,7 @@ const MODULES = [
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { loading, signOut } = useAuth(true);
+  const { isLoaded } = useUser();
   const { user, progress, initializeFromStorage } = useProgress();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -24,7 +25,7 @@ export default function Dashboard() {
     initializeFromStorage();
   }, [initializeFromStorage]);
 
-  if (loading) {
+  if (!isLoaded) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-lg">Loading...</div>
@@ -74,12 +75,13 @@ export default function Dashboard() {
             <Button
               variant="ghost"
               size="icon"
-              onClick={signOut}
+              onClick={() => navigate('/profile')}
               className="h-9 w-9"
-              title="Sign out"
+              title="Profile"
             >
-              <LogOut className="h-4 w-4" />
+              <User className="h-4 w-4" />
             </Button>
+            <UserButton afterSignOutUrl="/" />
           </div>
         </div>
       </header>

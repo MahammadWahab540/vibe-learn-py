@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
+import { useUser } from '@clerk/clerk-react';
 import { TopBar } from '@/components/TopBar';
 import { Instruction } from '@/components/Instruction';
 import { FtgChoices } from '@/components/FtgChoices';
@@ -27,7 +27,7 @@ type Lesson = {
 
 export default function Learn() {
   const navigate = useNavigate();
-  const { loading } = useAuth(true);
+  const { isLoaded } = useUser();
   const { user, progress, currentLessonIndex, initializeFromStorage, setCurrentLesson, markLessonPassed, incrementAttempts, decrementHeart, saveCode } = useProgress();
   
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -51,7 +51,7 @@ export default function Learn() {
     setSelectedChoice(null);
   }, [currentLessonIndex, currentLesson, progress]);
 
-  if (loading) {
+  if (!isLoaded) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-lg">Loading...</div>

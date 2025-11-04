@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '@clerk/clerk-react';
 import { Button } from '@/components/ui/button';
 import { Zap, Target, Trophy } from 'lucide-react';
 import { useEffect } from 'react';
@@ -7,11 +8,18 @@ import logo from '@/assets/logo.png';
 
 export default function Index() {
   const navigate = useNavigate();
+  const { user: clerkUser, isSignedIn } = useUser();
   const { user, initializeFromStorage } = useProgress();
 
   useEffect(() => {
     initializeFromStorage();
   }, [initializeFromStorage]);
+
+  useEffect(() => {
+    if (isSignedIn) {
+      navigate('/dashboard');
+    }
+  }, [isSignedIn, navigate]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -30,25 +38,20 @@ export default function Index() {
             </p>
             <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
               <Button
-                onClick={() => navigate('/dashboard')}
+                onClick={() => navigate('/sign-in')}
                 size="lg"
                 className="h-14 bg-gradient-primary px-8 text-lg font-semibold shadow-glow hover:opacity-90"
               >
-                {user.xp > 0 ? 'Continue Learning' : 'Start Learning'}
+                Get Started
               </Button>
               <Button
-                onClick={() => navigate('/auth')}
+                onClick={() => navigate('/sign-up')}
                 size="lg"
                 variant="outline"
                 className="h-14 px-8 text-lg font-semibold"
               >
-                Sign In
+                Sign Up
               </Button>
-              {user.xp > 0 && (
-                <div className="text-sm text-muted-foreground">
-                  {user.xp} XP • {user.streak} day streak
-                </div>
-              )}
             </div>
           </div>
 
